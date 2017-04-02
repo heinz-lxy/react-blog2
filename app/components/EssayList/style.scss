@@ -1,0 +1,13 @@
+﻿.essay{
+	border: 1px solid #efefef;
+    border-radius: 5px;
+    display: block;
+    margin-bottom: 20px;
+}
+
+.edit,.delete{
+	display: inline-block;
+	float: right;
+	position: relative;
+	top:-20px;
+}

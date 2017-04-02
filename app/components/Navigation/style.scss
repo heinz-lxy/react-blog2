@@ -1,0 +1,31 @@
+.navbar{
+  border-radius: 0!important;
+}
+
+
+.list-component {
+   .create-bar-component {
+     background: #0275d8;
+     color: #fff;
+     &:hover {
+       background: darken(#0275d8, 20%);
+       color: #fff;
+     }
+   }
+ }
+
+.form-group{
+ 	width:120px;
+ 	display: inline-block;
+ 	margin-right: 20px;
+ }
+
+
+.control-label{
+	color:white;
+}
+
+.login{
+	float:right;
+}
+

@@ -1,0 +1,28 @@
+/*
+ * @file style for component CreateBar
+ */
+
+.list-component {
+   .create-bar-component {
+     background: #0275d8;
+     color: #fff;
+     &:hover {
+       background: darken(#0275d8, 20%);
+       color: #fff;
+     }
+   }
+ }
+
+
+.user-info{
+	text-align: center;
+	.user-pic{
+		width:100px;
+		height: 100px;
+	
+	}
+	.user-name{
+		display: block;
+	}
+
+}
