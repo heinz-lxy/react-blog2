@@ -17,10 +17,15 @@ export default function essays(state=initialState,action){
 		    //isFetching: true,
 		  };
 		case fulfilledOf(ActionTypes.FETCH_ESSAY_LIST):
+	      let temp=[]
+		  for(let x in action.payload){ //json化为array
+		  		temp.push(action.payload[x])
+		  }
+		  console.log(temp)
 		  return {
 		    ...state,
 		    //isFetching: false,
-		    essays: action.payload,
+		    essays: temp,
 		    isEditing:false
 		  };
 

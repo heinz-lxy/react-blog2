@@ -1,5 +1,6 @@
 ﻿import * as essaysStorage from '../utils/essaysStorage';
 import * as usersStorage from '../utils/usersStorage';
+import * as mongodb from '../utils/mongodb';
 
 //action names
 export const WRITE_ESSAY = 'WRITE_ESSAY'
@@ -100,7 +101,7 @@ export const fulfilledOf = actionType => `${actionType}_FULFILLED`;
 export function fetchEssayList(){
 	return {
 		type:FETCH_ESSAY_LIST,
-		payload:essaysStorage.getAll()
+		payload:mongodb.getEssays()
 
 	}
 }
