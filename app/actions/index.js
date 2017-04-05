@@ -1,6 +1,6 @@
 ﻿import * as essaysStorage from '../utils/essaysStorage';
 import * as usersStorage from '../utils/usersStorage';
-import * as mongodb from '../utils/mongodb';
+import * as mongodbStorage from '../utils/mongodbStorage';
 
 //action names
 export const WRITE_ESSAY = 'WRITE_ESSAY'
@@ -15,8 +15,6 @@ export const CANCEL_EDIT = 'CANCEL_EDIT'
 export const USER_LOGIN = 'USER_LOGIN'
 
 
-
-
 //action creators
 export function writeEssay(){
 	return {
@@ -25,7 +23,7 @@ export function writeEssay(){
 }
 
 export function deleteEssay(id) {
-  const promise = essaysStorage.deleteEssay(id).then(() => id);
+  const promise = mongodbStorage.deleteEssay(id)
 
   return dispatch => {
     dispatch({
@@ -36,9 +34,7 @@ export function deleteEssay(id) {
       },
     });
 
-    promise.then(
-      () => dispatch(fetchEssayList())
-    );
+    promise.then(dispatch(fetchEssayList()));
   };
 }
 
@@ -62,33 +58,20 @@ export function userLogin(info){
 	}
 }
 
-export function saveEssay(essay,flag) { //flag为新建和编辑文章的标识
-
-	const promise = flag
-	    ? essaysStorage.updateEssay(
-	      essay.id,
-	      essay.title,
-	      essay.content
-	    )
-	    : essaysStorage.insertEssay(
-	      essay.title,
-	      essay.content,
-	      essay.id
-	    );
+export function saveEssay(essay) { 
+	const promise = mongodbStorage.saveEssay(essay)
 	return dispatch => {
-		dispatch({
-			type:SAVE_ESSAY,
-			payload:{
-				promise,
-				data:essay
-			}
-		})
+	  dispatch({
+	    type: SAVE_ESSAY,
+	    essay:essay
+	  });
 
-		promise.then(
-			() => dispatch(fetchEssayList())
-		)
-	}
+	  promise.then(dispatch(fetchEssayList()));
+	};
+	
 }
+
+
      
 
 
@@ -99,9 +82,10 @@ export const pendingOf = actionType => `${actionType}_PENDING`;
 export const fulfilledOf = actionType => `${actionType}_FULFILLED`;
 
 export function fetchEssayList(){
+	console.log('fetching')
 	return {
 		type:FETCH_ESSAY_LIST,
-		payload:mongodb.getEssays()
+		payload:mongodbStorage.getEssays()
 
 	}
 }

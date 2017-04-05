@@ -72,6 +72,23 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+	// let $=require('jquery')
+	// $.ajax({  
+	//   url: 'http://127.0.0.1:1724/deleteessay',  
+	//   type: 'post',
+	//   data:{id:1},  
+	//   dataType: 'json',  
+	//   timeout: 1000,  
+	//   cache: false,  
+	//   success:function(data){
+	//     console.log('0404')
+	//   },
+	//   error:function(err){
+
+	//   }
+	// }) 
+
+	//s1a
 	//create root component based on component Blog
 	var App = (0, _reactRedux.connect)(function (state) {
 		return { state: state };
@@ -26996,7 +27013,6 @@
 					//json化为array
 					temp.push(action.payload[x]);
 				}
-				console.log(temp);
 				return _extends({}, state, {
 					//isFetching: false,
 					essays: temp,
@@ -27061,9 +27077,9 @@
 
 	var usersStorage = _interopRequireWildcard(_usersStorage);
 
-	var _mongodb = __webpack_require__(239);
+	var _mongodbStorage = __webpack_require__(239);
 
-	var mongodb = _interopRequireWildcard(_mongodb);
+	var mongodbStorage = _interopRequireWildcard(_mongodbStorage);
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -27085,9 +27101,7 @@
 	}
 
 	function deleteEssay(id) {
-		var promise = essaysStorage.deleteEssay(id).then(function () {
-			return id;
-		});
+		var promise = mongodbStorage.deleteEssay(id);
 
 		return function (dispatch) {
 			dispatch({
@@ -27098,9 +27112,7 @@
 				}
 			});
 
-			promise.then(function () {
-				return dispatch(fetchEssayList());
-			});
+			promise.then(dispatch(fetchEssayList()));
 		};
 	}
 
@@ -27125,22 +27137,15 @@
 		};
 	}
 
-	function saveEssay(essay, flag) {
-		//flag为新建和编辑文章的标识
-
-		var promise = flag ? essaysStorage.updateEssay(essay.id, essay.title, essay.content) : essaysStorage.insertEssay(essay.title, essay.content, essay.id);
+	function saveEssay(essay) {
+		var promise = mongodbStorage.saveEssay(essay);
 		return function (dispatch) {
 			dispatch({
 				type: SAVE_ESSAY,
-				payload: {
-					promise: promise,
-					data: essay
-				}
+				essay: essay
 			});
 
-			promise.then(function () {
-				return dispatch(fetchEssayList());
-			});
+			promise.then(dispatch(fetchEssayList()));
 		};
 	}
 
@@ -27155,9 +27160,10 @@
 	};
 
 	function fetchEssayList() {
+		console.log('fetching');
 		return {
 			type: FETCH_ESSAY_LIST,
-			payload: mongodb.getEssays()
+			payload: mongodbStorage.getEssays()
 
 		};
 	}
@@ -27647,13 +27653,15 @@
 	  value: true
 	});
 	exports.getEssays = getEssays;
+	exports.saveEssay = saveEssay;
+	exports.deleteEssay = deleteEssay;
 	var $ = __webpack_require__(240);
 
 	function getEssays() {
 	  var returnData = void 0;
 	  var promise = new Promise(function (resolve, reject) {
 	    $.ajax({
-	      url: 'http://127.0.0.1:1724/',
+	      url: 'http://127.0.0.1:1724/getessays',
 	      type: 'GET',
 	      dataType: 'json',
 	      timeout: 1000,
@@ -27667,6 +27675,46 @@
 	    });
 	  });
 	  return promise.then();
+	}
+
+	function saveEssay(essay) {
+	  var promise = new Promise(function (resolve, reject) {
+	    $.ajax({
+	      url: 'http://127.0.0.1:1724/saveessay',
+	      type: 'post',
+	      data: essay,
+	      dataType: 'json',
+	      timeout: 1000,
+	      cache: false,
+	      success: function success(data) {
+	        resolve(data);
+	      },
+	      error: function error(err) {
+	        reject(err);
+	      }
+	    });
+	  });
+	  return promise;
+	}
+
+	function deleteEssay(id) {
+	  var promise = new Promise(function (resolve, reject) {
+	    $.ajax({
+	      url: 'http://127.0.0.1:1724/deleteessay',
+	      type: 'post',
+	      data: { _id: id },
+	      dataType: 'json',
+	      timeout: 1000,
+	      cache: false,
+	      success: function success(data) {
+	        resolve(data);
+	      },
+	      error: function error(err) {
+	        reject(err);
+	      }
+	    });
+	  });
+	  return promise;
 	}
 
 /***/ },
@@ -57035,10 +57083,10 @@
 				    onDel = _props.onDel;
 
 
-				var essaylist = essays.map(function (essay, id) {
+				var essaylist = essays.map(function (essay) {
 					return _react2.default.createElement(
 						'div',
-						{ className: 'essay', key: id },
+						{ className: 'essay', key: essay._id },
 						_react2.default.createElement(
 							'h2',
 							{ className: 'essay-name' },
@@ -57052,14 +57100,14 @@
 						_react2.default.createElement(
 							'a',
 							{ className: 'delete', href: '#', onClick: function onClick() {
-									return onDel(id);
+									return onDel(essay._id);
 								} },
 							'\u5220\u9664'
 						),
 						_react2.default.createElement(
 							'a',
 							{ className: 'edit', href: '#', onClick: function onClick() {
-									return onEdit(id);
+									return onEdit(essay._id);
 								} },
 							'\u7F16\u8F91'
 						)
@@ -57177,9 +57225,10 @@
 				    titleValue = '',
 				    contentValue = '';
 				if (selectedID !== '' && selectedID !== null) {
-					selectedEssay = essays.filter(function (x, id) {
-						return id == selectedID;
+					selectedEssay = essays.filter(function (x) {
+						return x._id == selectedID;
 					});
+					console.log(selectedEssay);
 					titleValue = selectedEssay[0].title;
 					contentValue = selectedEssay[0].content;
 				}
@@ -57211,17 +57260,15 @@
 						onSave({
 							title: _this2.refs.title.value,
 							content: _this2.refs.content.value,
-							id: selectedID
+							_id: selectedID
 						}, 1);
 					};
 				} else {
 					//新建文章
 					save = function save() {
-						var lastEssayId = essays.length === 0 ? -1 : essays[essays.length - 1].id;
 						onSave({
 							title: _this2.refs.title.value,
-							content: _this2.refs.content.value,
-							id: lastEssayId + 1 //最后一篇文章的id+1
+							content: _this2.refs.content.value
 						}, 0);
 					};
 				}

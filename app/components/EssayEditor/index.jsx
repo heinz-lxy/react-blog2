@@ -17,7 +17,8 @@ class EssayEditor extends React.Component{
 		let essays = store.getState().essays.essays
 		let selectedEssay,titleValue='',contentValue=''
 		if(selectedID!==''&&selectedID!==null){
-			selectedEssay=essays.filter((x,id)=>id==selectedID)
+			selectedEssay=essays.filter((x)=>x._id==selectedID)
+			console.log(selectedEssay)
 			titleValue=selectedEssay[0].title
 			contentValue=selectedEssay[0].content
 		}
@@ -39,17 +40,15 @@ class EssayEditor extends React.Component{
 				onSave({
 					title:this.refs.title.value,
 					content:this.refs.content.value,
-					id:selectedID
+					_id:selectedID
 				},1)
 			}
 		}
 		else{ //新建文章
 			save = ()=>{
-				let lastEssayId=essays.length===0?-1:(essays[essays.length-1].id)
 				onSave({
 					title:this.refs.title.value,
 					content:this.refs.content.value,
-					id:(lastEssayId+1) //最后一篇文章的id+1
 				},0)
 			}
 		}

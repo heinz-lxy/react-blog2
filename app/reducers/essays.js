@@ -21,7 +21,6 @@ export default function essays(state=initialState,action){
 		  for(let x in action.payload){ //json化为array
 		  		temp.push(action.payload[x])
 		  }
-		  console.log(temp)
 		  return {
 		    ...state,
 		    //isFetching: false,
